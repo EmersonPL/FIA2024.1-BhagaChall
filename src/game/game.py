@@ -42,7 +42,12 @@ class Game:
         return self._get_tiger_moves()
 
     def _get_goat_moves(self) -> List[Movement]:
-        pass
+        moves = []
+
+        for goat in self._get_piece_positions(GOAT_PLAYER):
+            moves.extend(self._get_simple_moves(goat))
+
+        return moves
 
     def _get_tiger_moves(self) -> List[Movement]:
         moves = []
