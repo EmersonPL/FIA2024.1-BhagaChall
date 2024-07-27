@@ -8,9 +8,10 @@ from src.constants import (
     BOARD_LINES,
     GOAT_PLAYER,
     TIGER_PLAYER,
+    TOTAL_NUMBER_OF_GOATS,
     list_of_available_diagonal_movements,
 )
-from src.utils import BoardSquare, Movement
+from src.utils import BoardSquare, Movement, Play
 from src.game.game_state import GameState
 
 
@@ -30,31 +31,36 @@ class Game:
 
         self.board = board
 
-    def get_available_moves(self) -> List[Movement]:
+    def available_moves(self) -> List[Play]:
         """Return a list of the available moves.
 
         The moves are a tuple of board squares, with the first one being the origin square (where the piece is),
         and the second is the target square.
         """
         if self.game_state.player == GOAT_PLAYER:
-            return self._get_goat_moves()
+            return self._goat_movements()
 
-        return self._get_tiger_moves()
+        return self._tiger_movements()
 
-    def _get_goat_moves(self) -> List[Movement]:
+    def _goat_movements(self) -> List[Play]:
+        if self.game_state.positioned_goats < TOTAL_NUMBER_OF_GOATS:
+            return self._goat_placement_moves()
+
         moves = []
-
         for goat in self._get_piece_positions(GOAT_PLAYER):
-            moves.extend(self._get_simple_moves(goat))
+            moves.extend(self._get_piece_movements(goat))
 
         return moves
 
-    def _get_tiger_moves(self) -> List[Movement]:
+    def _goat_placement_moves(self) -> List[BoardSquare]:
+        pass
+
+    def _tiger_movements(self) -> List[Movement]:
         moves = []
 
         for tiger in self._get_piece_positions(TIGER_PLAYER):
-            moves.extend(self._get_simple_moves(tiger))
-            moves.extend(self._get_capture_moves(tiger))
+            moves.extend(self._get_piece_movements(tiger))
+            moves.extend(self._get_piece_capture_moves(tiger))
 
         return moves
 
@@ -63,7 +69,7 @@ class Game:
         pos = [(int(line), int(col)) for line, col in zip(lines, cols)]
         return pos
 
-    def _get_simple_moves(self, piece_pos: BoardSquare) -> List[Movement]:
+    def _get_piece_movements(self, piece_pos: BoardSquare) -> List[Movement]:
         lin, col = piece_pos
 
         moves = []
@@ -81,5 +87,5 @@ class Game:
         allowed_moves = [(piece_pos, move) for move in moves if self.board[move] == 0]
         return allowed_moves
 
-    def _get_capture_moves(self, piece_pos: BoardSquare) -> List[Movement]:
+    def _get_piece_capture_moves(self, piece_pos: BoardSquare) -> List[Movement]:
         return []

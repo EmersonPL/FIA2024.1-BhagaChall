@@ -4,8 +4,13 @@ from typing import Final, List
 
 from src.utils import BoardSquare
 
+# Board configuration
 BOARD_LINES: Final = 5
 BOARD_COLS: Final = 5
+
+# Game configuration
+TOTAL_NUMBER_OF_GOATS: Final = 20
+CAPTURED_GOATS_TO_WIN: Final = 5
 
 TIGER_PLAYER: Final = -1
 GOAT_PLAYER: Final = 1
