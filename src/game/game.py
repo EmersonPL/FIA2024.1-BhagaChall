@@ -53,7 +53,8 @@ class Game:
         return moves
 
     def _goat_placement_moves(self) -> List[BoardSquare]:
-        pass
+        """Return all empty board squares."""
+        return self._get_piece_positions(0)
 
     def _tiger_movements(self) -> List[Movement]:
         moves = []
@@ -64,7 +65,7 @@ class Game:
 
         return moves
 
-    def _get_piece_positions(self, piece_type: Literal[-1, 1]) -> List[BoardSquare]:
+    def _get_piece_positions(self, piece_type: Literal[-1, 0, 1]) -> List[BoardSquare]:
         lines, cols = np.where(self.board == piece_type)
         pos = [(int(line), int(col)) for line, col in zip(lines, cols)]
         return pos
