@@ -9,10 +9,10 @@ from src.constants import (
     GOAT_PLAYER,
     TIGER_PLAYER,
     TOTAL_NUMBER_OF_GOATS,
-    list_of_available_diagonal_movements,
 )
-from src.utils import BoardSquare, Movement, Play
+from src.game.game_types import BoardSquare, Capture, Movement, Play
 from src.game.game_state import GameState
+from src.utils import neighboring_squares
 
 
 class Game:
@@ -56,7 +56,7 @@ class Game:
         """Return all empty board squares."""
         return self._get_piece_positions(0)
 
-    def _tiger_movements(self) -> List[Movement]:
+    def _tiger_movements(self) -> List[Movement | Capture]:
         moves = []
 
         for tiger in self._get_piece_positions(TIGER_PLAYER):
@@ -67,25 +67,13 @@ class Game:
 
     def _get_piece_positions(self, piece_type: Literal[-1, 0, 1]) -> List[BoardSquare]:
         lines, cols = np.where(self.board == piece_type)
-        pos = [(int(line), int(col)) for line, col in zip(lines, cols)]
+        pos = [BoardSquare(lin=int(line), col=int(col)) for line, col in zip(lines, cols)]
         return pos
 
     def _get_piece_movements(self, piece_pos: BoardSquare) -> List[Movement]:
-        lin, col = piece_pos
+        moves = neighboring_squares(piece_pos)
 
-        moves = []
-        if lin > 0:
-            moves.append((lin - 1, col))
-        if lin < BOARD_LINES - 1:
-            moves.append((lin + 1, col))
-        if col > 0:
-            moves.append((lin, col - 1))
-        if col < BOARD_COLS - 1:
-            moves.append((lin, col + 1))
-
-        moves.extend(list_of_available_diagonal_movements(piece_pos))
-
-        allowed_moves = [(piece_pos, move) for move in moves if self.board[move] == 0]
+        allowed_moves = [Movement(piece_pos, move) for move in moves if self.board[move.lin, move.col] == 0]
         return allowed_moves
 
     def _get_piece_capture_moves(self, piece_pos: BoardSquare) -> List[Movement]:
