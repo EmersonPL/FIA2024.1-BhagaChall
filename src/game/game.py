@@ -55,3 +55,15 @@ class Game:
     def _trapped_tigers(self) -> bool:
         if self.game_state.player == TIGER_PLAYER and len(self.board.available_moves(self.game_state)) == 0:
             return True
+
+    def print_game_info(self):
+        """Print the state of the game, including the state and the board."""
+        print("-" * 80)
+        print(f"Current player: {'Tiger' if self.game_state.player == TIGER_PLAYER else 'GOAT'}")
+        print(
+            f"Total Positioned Goats: {self.game_state.positioned_goats}"
+            f"       ---       "
+            f"Total captured goats: {self.game_state.captured_goats}"
+        )
+        print("-" * 80)
+        self.board.print_board()

@@ -124,3 +124,42 @@ class Board:
             return None
 
         return BoardSquare(new_lin, new_col)
+
+    def print_board(self):
+        board_str = (
+            "P---P---P---P---P\n"
+            "|\\  |  /|\\  |  /|\n"
+            "| \\ | / | \\ | / |\n"
+            "|  \\|/  |  \\|/  |\n"
+            "P---P---P---P---P\n"
+            "|  /|\\  |  /|\\  |\n"
+            "| / | \\ | / | \\ |\n"
+            "|/  |  \\|/  |  \\|\n"
+            "P---P---P---P---P\n"
+            "|\\  |  /|\\  |  /|\n"
+            "| \\ | / | \\ | / |\n"
+            "|  \\|/  |  \\|/  |\n"
+            "P---P---P---P---P\n"
+            "|  /|\\  |  /|\\  |\n"
+            "| / | \\ | / | \\ |\n"
+            "|/  |  \\|/  |  \\|\n"
+            "P---P---P---P---P\n"
+        )
+
+        intersect_count = 0
+        for i, char in enumerate(board_str):
+            if char == "P":
+                piece = self.board[intersect_count // BOARD_LINES, intersect_count % BOARD_COLS]
+                if piece == GOAT_PLAYER:
+                    piece_str = "G"
+                elif piece == TIGER_PLAYER:
+                    piece_str = "T"
+                else:
+                    piece_str = "O"
+
+                pre_str = board_str[:i]
+                post_str = board_str[i + 1 :]
+                board_str = pre_str + piece_str + post_str
+                intersect_count += 1
+
+        print(board_str)
