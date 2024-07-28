@@ -4,7 +4,7 @@ import numpy as np
 
 from src.constants import GOAT_PLAYER, TIGER_PLAYER, TOTAL_NUMBER_OF_GOATS
 from src.game.game import Game
-from src.game.game_types import BoardSquare, Movement
+from src.game.game_types import BoardSquare, Capture, Movement
 
 T = TIGER_PLAYER
 G = GOAT_PLAYER
@@ -61,6 +61,9 @@ class TestAllowedTigerMovements(TestCase):
         game.board[4, 1] = TIGER_PLAYER
 
         self.assertCountEqual(game.available_moves(), expected)
+
+    def test_forced_capture_moves(self):
+        """Should not allow a regular move when there's a capture."""
 
 
 class TestAllowedGoatMovements(TestCase):
@@ -139,3 +142,99 @@ class TestAllowedGoatMovements(TestCase):
             game.board[goat.lin, goat.col] = GOAT_PLAYER
 
         self.assertCountEqual(game.available_moves(), expected)
+
+
+class TestAllowedCaptures(TestCase):
+    def setUp(self):
+        self.game = Game()
+        self.game.game_state.player = TIGER_PLAYER
+        self.maxDiff = None
+
+    def _allowed_captures(self):
+        allowed_moves = self.game.available_moves()
+        allowed_captures = [move for move in allowed_moves if isinstance(move, Capture)]
+
+        return allowed_captures
+
+    def test_base_board(self):
+        """Shouldn't have any legal capture"""
+        allowed_moves = self._allowed_captures()
+
+        self.assertCountEqual(allowed_moves, [])
+
+    def test_no_neighbor_goats(self):
+        """If there's no goats close to a tiger, can't capture anything"""
+        board = np.array(
+            [
+                [T, 0, 0, 0, T],
+                [0, 0, 0, 0, 0],
+                [0, 0, G, 0, 0],
+                [0, 0, 0, 0, 0],
+                [T, 0, 0, 0, T],
+            ]
+        )
+        self.game.board = board
+
+        allowed_moves = self._allowed_captures()
+
+        self.assertCountEqual(allowed_moves, [])
+
+    def test_out_of_bounds_capture(self):
+        """Should not allow captures that would make the tiger leave the board"""
+        board = np.array(
+            [
+                [T, 0, 0, 0, G],
+                [0, 0, 0, T, 0],
+                [0, 0, 0, 0, 0],
+                [0, 0, G, 0, 0],
+                [T, 0, 0, 0, T],
+            ]
+        )
+        self.game.board = board
+
+        allowed_moves = self._allowed_captures()
+
+        self.assertCountEqual(allowed_moves, [])
+
+    def test_protected_goat(self):
+        """If the square behind a goat has a piece, can't capture."""
+        board = np.array(
+            [
+                [T, T, 0, 0, T],
+                [G, 0, T, 0, 0],
+                [G, 0, G, 0, 0],
+                [0, 0, G, 0, 0],
+                [G, 0, 0, 0, 0],
+            ]
+        )
+        self.game.board = board
+
+        allowed_moves = self._allowed_captures()
+
+        self.assertCountEqual(allowed_moves, [])
+
+    def test_capture(self):
+        """Allowed captures case"""
+        board = np.array(
+            [
+                [0, 0, T, G, 0],
+                [0, T, 0, G, 0],
+                [0, 0, G, 0, 0],
+                [0, 0, 0, 0, G],
+                [T, G, 0, 0, T],
+            ]
+        )
+
+        expected_captures = [
+            Capture(starting_square=BoardSquare(0, 2), ending_square=BoardSquare(0, 4), captured=BoardSquare(0, 3)),
+            Capture(starting_square=BoardSquare(0, 2), ending_square=BoardSquare(2, 4), captured=BoardSquare(1, 3)),
+            Capture(starting_square=BoardSquare(1, 1), ending_square=BoardSquare(3, 3), captured=BoardSquare(2, 2)),
+            Capture(starting_square=BoardSquare(4, 0), ending_square=BoardSquare(4, 2), captured=BoardSquare(4, 1)),
+            Capture(starting_square=BoardSquare(4, 4), ending_square=BoardSquare(2, 4), captured=BoardSquare(3, 4)),
+        ]
+
+        self.game.board = board
+
+        allowed_moves = self._allowed_captures()
+
+        self.assertCountEqual(allowed_moves, expected_captures)
