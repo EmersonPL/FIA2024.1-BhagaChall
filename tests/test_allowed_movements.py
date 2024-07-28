@@ -11,6 +11,9 @@ G = GOAT_PLAYER
 
 
 class TestAllowedTigerMovements(TestCase):
+    def setUp(self):
+        self.maxDiff = None
+
     def test_base_board_movements(self):
         expected = [
             Movement(BoardSquare(0, 0), BoardSquare(0, 1)),
@@ -64,6 +67,28 @@ class TestAllowedTigerMovements(TestCase):
 
     def test_forced_capture_moves(self):
         """Should not allow a regular move when there's a capture."""
+        board = np.array(
+            [
+                [T, 0, T, G, 0],
+                [0, 0, 0, G, 0],
+                [0, 0, G, 0, 0],
+                [0, 0, 0, 0, G],
+                [T, 0, 0, 0, T],
+            ]
+        )
+
+        # Although there are allowed squares to go, the captures are forced, so it needs to select one of them.
+        expected_moves = [
+            Capture(starting_square=BoardSquare(0, 2), ending_square=BoardSquare(0, 4), captured=BoardSquare(0, 3)),
+            Capture(starting_square=BoardSquare(0, 2), ending_square=BoardSquare(2, 4), captured=BoardSquare(1, 3)),
+            Capture(starting_square=BoardSquare(4, 4), ending_square=BoardSquare(2, 4), captured=BoardSquare(3, 4)),
+        ]
+
+        game = Game()
+        game.board = board
+        game.game_state.player = TIGER_PLAYER
+
+        self.assertCountEqual(game.available_moves(), expected_moves)
 
 
 class TestAllowedGoatMovements(TestCase):

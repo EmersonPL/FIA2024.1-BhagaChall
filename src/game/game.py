@@ -57,13 +57,18 @@ class Game:
         return self._get_piece_positions(0)
 
     def _tiger_movements(self) -> List[Movement | Capture]:
-        moves = []
+        normal_moves = []
+        capture_moves = []
 
         for tiger in self._get_piece_positions(TIGER_PLAYER):
-            moves.extend(self._get_piece_movements(tiger))
-            moves.extend(self._get_piece_capture_moves(tiger))
+            normal_moves.extend(self._get_piece_movements(tiger))
+            capture_moves.extend(self._get_piece_capture_moves(tiger))
 
-        return moves
+        if capture_moves:
+            # Force the selection of a capture, if any is available
+            return capture_moves
+
+        return normal_moves
 
     def _get_piece_positions(self, piece_type: Literal[-1, 0, 1]) -> List[BoardSquare]:
         lines, cols = np.where(self.board == piece_type)
