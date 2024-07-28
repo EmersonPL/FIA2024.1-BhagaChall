@@ -27,4 +27,4 @@ class Capture:
 
 
 # A play can be either the movement of a piece, or the positioning of one (for the first goat moves).
-Play = Movement | BoardSquare
+Play = Capture | Movement | BoardSquare

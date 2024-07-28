@@ -3,7 +3,7 @@ from typing import List, Literal
 import numpy as np
 import numpy.typing as npt
 
-from src.constants import BOARD_COLS, BOARD_LINES, GOAT_PLAYER, TIGER_PLAYER, TOTAL_NUMBER_OF_GOATS
+from src.constants import BOARD_COLS, BOARD_LINES, CLEAN_SQUARE, GOAT_PLAYER, TIGER_PLAYER, TOTAL_NUMBER_OF_GOATS
 from src.game.game_state import GameState
 from src.game.game_types import BoardSquare, Capture, Movement, Play
 from src.utils import neighboring_squares
@@ -16,13 +16,32 @@ class Board:
             self._setup_initial_board()
 
     def _setup_initial_board(self):
-        board = np.zeros([BOARD_LINES, BOARD_COLS])
+        board = np.zeros([BOARD_LINES, BOARD_COLS], dtype=int)
         board[0, 0] = TIGER_PLAYER
         board[0, BOARD_COLS - 1] = TIGER_PLAYER
         board[BOARD_LINES - 1, 0] = TIGER_PLAYER
         board[BOARD_LINES - 1, BOARD_COLS - 1] = TIGER_PLAYER
 
         self.board = board
+
+    def move(self, move: Play):
+        """Make a move in the board.
+
+        The move can be a placement of a goat, a movement of a tiger or goat, or the capture of a goat by a tiger.
+        """
+        if isinstance(move, BoardSquare):
+            self.board[move.lin, move.col] = GOAT_PLAYER
+
+        elif isinstance(move, Movement):
+            initial_piece = self.board[move.start.lin, move.start.col]
+            self.board[move.end.lin, move.end.col] = initial_piece
+
+            self.board[move.start.lin, move.start.col] = CLEAN_SQUARE
+
+        elif isinstance(move, Capture):
+            self.board[move.starting_square.lin, move.starting_square.col] = CLEAN_SQUARE
+            self.board[move.captured.lin, move.captured.col] = CLEAN_SQUARE
+            self.board[move.ending_square.lin, move.ending_square.col] = TIGER_PLAYER
 
     def available_moves(self, game_state: GameState) -> List[Play]:
         """Return a list of the available moves for the given game state."""
@@ -43,7 +62,7 @@ class Board:
 
     def _goat_placement_moves(self) -> List[BoardSquare]:
         """Return all empty board squares."""
-        return self._get_piece_positions(0)
+        return self._get_piece_positions(CLEAN_SQUARE)
 
     def _tiger_movements(self) -> List[Movement | Capture]:
         normal_moves = []

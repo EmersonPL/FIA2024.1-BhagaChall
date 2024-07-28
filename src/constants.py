@@ -15,6 +15,8 @@ CAPTURED_GOATS_TO_WIN: Final = 5
 TIGER_PLAYER: Final = -1
 GOAT_PLAYER: Final = 1
 
+CLEAN_SQUARE: Final = 0
+
 # The "lines" of the board, in which the pieces can move
 AVAILABLE_DIAGONAL_MOVEMENTS: Final = {
     # L0
