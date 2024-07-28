@@ -58,10 +58,10 @@ class TestAllowedTigerMovements(TestCase):
 
         game = Game()
         game.game_state.player = TIGER_PLAYER
-        game.board[0, 4] = 0
-        game.board[1, 1] = TIGER_PLAYER
-        game.board[4, 4] = 0
-        game.board[4, 1] = TIGER_PLAYER
+        game.board.board[0, 4] = 0
+        game.board.board[1, 1] = TIGER_PLAYER
+        game.board.board[4, 4] = 0
+        game.board.board[4, 1] = TIGER_PLAYER
 
         self.assertCountEqual(game.available_moves(), expected)
 
@@ -85,7 +85,7 @@ class TestAllowedTigerMovements(TestCase):
         ]
 
         game = Game()
-        game.board = board
+        game.board.board = board
         game.game_state.player = TIGER_PLAYER
 
         self.assertCountEqual(game.available_moves(), expected_moves)
@@ -128,7 +128,7 @@ class TestAllowedGoatMovements(TestCase):
             Movement(BoardSquare(3, 3), BoardSquare(4, 3)),
         ]
         for goat in goats_positions:
-            game.board[goat.lin, goat.col] = GOAT_PLAYER
+            game.board.board[goat.lin, goat.col] = GOAT_PLAYER
         self.assertCountEqual(game.available_moves(), expected)
 
     def test_goat_positioning_movements(self):
@@ -164,7 +164,7 @@ class TestAllowedGoatMovements(TestCase):
         game = Game()
         game.game_state.positioned_goats = 0
         for goat in goats_positions:
-            game.board[goat.lin, goat.col] = GOAT_PLAYER
+            game.board.board[goat.lin, goat.col] = GOAT_PLAYER
 
         self.assertCountEqual(game.available_moves(), expected)
 
@@ -198,7 +198,7 @@ class TestAllowedCaptures(TestCase):
                 [T, 0, 0, 0, T],
             ]
         )
-        self.game.board = board
+        self.game.board.board = board
 
         allowed_moves = self._allowed_captures()
 
@@ -215,7 +215,7 @@ class TestAllowedCaptures(TestCase):
                 [T, 0, 0, 0, T],
             ]
         )
-        self.game.board = board
+        self.game.board.board = board
 
         allowed_moves = self._allowed_captures()
 
@@ -232,7 +232,7 @@ class TestAllowedCaptures(TestCase):
                 [G, 0, 0, 0, 0],
             ]
         )
-        self.game.board = board
+        self.game.board.board = board
 
         allowed_moves = self._allowed_captures()
 
@@ -258,7 +258,7 @@ class TestAllowedCaptures(TestCase):
             Capture(starting_square=BoardSquare(4, 4), ending_square=BoardSquare(2, 4), captured=BoardSquare(3, 4)),
         ]
 
-        self.game.board = board
+        self.game.board.board = board
 
         allowed_moves = self._allowed_captures()
 
