@@ -1,4 +1,4 @@
-from typing import List, Literal, Tuple
+from typing import List, Literal
 
 from src.constants import CAPTURED_GOATS_TO_WIN, GOAT_PLAYER, TIGER_PLAYER
 from src.game.game_types import BoardSquare, Capture, Play
