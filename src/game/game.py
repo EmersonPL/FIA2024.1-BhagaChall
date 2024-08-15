@@ -56,6 +56,15 @@ class Game:
         if self.game_state.player == TIGER_PLAYER and len(self.board.available_moves(self.game_state)) == 0:
             return True
 
+    def count_number_of_locked_tigers(self):
+        """Return the number of tigers that don't have allowed moves.
+
+        This is different from the regular move, as this doesn't count a
+        tiger as locked if it has allowed movements, but there's another
+        tiger that can capture (i.e, does not enforce captures in the count)
+        """
+        return self.board.count_number_of_locked_tigers()
+
     def print_game_info(self):
         """Print the state of the game, including the state and the board."""
         print("-" * 80)

@@ -3,7 +3,14 @@ from typing import List, Literal
 import numpy as np
 import numpy.typing as npt
 
-from src.constants import BOARD_COLS, BOARD_LINES, CLEAN_SQUARE, GOAT_PLAYER, TIGER_PLAYER, TOTAL_NUMBER_OF_GOATS
+from src.constants import (
+    BOARD_COLS,
+    BOARD_LINES,
+    CLEAN_SQUARE,
+    GOAT_PLAYER,
+    TIGER_PLAYER,
+    TOTAL_NUMBER_OF_GOATS,
+)
 from src.game.game_state import GameState
 from src.game.game_types import BoardSquare, Capture, Movement, Play
 from src.utils import neighboring_squares
@@ -39,9 +46,13 @@ class Board:
             self.board[move.start.lin, move.start.col] = CLEAN_SQUARE
 
         elif isinstance(move, Capture):
-            self.board[move.starting_square.lin, move.starting_square.col] = CLEAN_SQUARE
+            self.board[move.starting_square.lin, move.starting_square.col] = (
+                CLEAN_SQUARE
+            )
             self.board[move.captured.lin, move.captured.col] = CLEAN_SQUARE
-            self.board[move.ending_square.lin, move.ending_square.col] = TIGER_PLAYER
+            self.board[move.ending_square.lin, move.ending_square.col] = (
+                TIGER_PLAYER
+            )
 
     def available_moves(self, game_state: GameState) -> List[Play]:
         """Return a list of the available moves for the given game state."""
@@ -78,15 +89,24 @@ class Board:
 
         return normal_moves
 
-    def _get_piece_positions(self, piece_type: Literal[-1, 0, 1]) -> List[BoardSquare]:
+    def _get_piece_positions(
+        self, piece_type: Literal[-1, 0, 1]
+    ) -> List[BoardSquare]:
         lines, cols = np.where(self.board == piece_type)
-        pos = [BoardSquare(lin=int(line), col=int(col)) for line, col in zip(lines, cols)]
+        pos = [
+            BoardSquare(lin=int(line), col=int(col))
+            for line, col in zip(lines, cols)
+        ]
         return pos
 
     def _get_piece_movements(self, piece_pos: BoardSquare) -> List[Movement]:
         moves = neighboring_squares(piece_pos)
 
-        allowed_moves = [Movement(piece_pos, move) for move in moves if self.board[move.lin, move.col] == 0]
+        allowed_moves = [
+            Movement(piece_pos, move)
+            for move in moves
+            if self.board[move.lin, move.col] == 0
+        ]
         return allowed_moves
 
     def _get_piece_capture_moves(self, piece_pos: BoardSquare) -> List[Capture]:
@@ -94,15 +114,23 @@ class Board:
 
         capture_movements = []
         for neighbor_pos in neighbors:
-            square_after_capture = self._get_square_after_capture(piece_pos, neighbor_pos)
+            square_after_capture = self._get_square_after_capture(
+                piece_pos, neighbor_pos
+            )
             if square_after_capture:
                 capture_movements.append(
-                    Capture(starting_square=piece_pos, ending_square=square_after_capture, captured=neighbor_pos)
+                    Capture(
+                        starting_square=piece_pos,
+                        ending_square=square_after_capture,
+                        captured=neighbor_pos,
+                    )
                 )
 
         return capture_movements
 
-    def _get_square_after_capture(self, tiger_pos: BoardSquare, goat_pos: BoardSquare) -> BoardSquare | None:
+    def _get_square_after_capture(
+        self, tiger_pos: BoardSquare, goat_pos: BoardSquare
+    ) -> BoardSquare | None:
         """Return the square where the piece will be after capturing, or None if the capture is not allowed."""
         if self.board[goat_pos.lin, goat_pos.col] != GOAT_PLAYER:
             return None
@@ -120,10 +148,35 @@ class Board:
             return None
 
         piece_in_new_square = self.board[new_lin, new_col]
-        if piece_in_new_square == TIGER_PLAYER or piece_in_new_square == GOAT_PLAYER:
+        if (
+            piece_in_new_square == TIGER_PLAYER
+            or piece_in_new_square == GOAT_PLAYER
+        ):
             return None
 
         return BoardSquare(new_lin, new_col)
+
+    def count_number_of_locked_tigers(self):
+        """Return the number of locked tigers."""
+        locked_tigers = 0
+        for tiger in self._get_piece_positions(TIGER_PLAYER):
+            moves = []
+            moves.extend(self._get_piece_movements(tiger))
+            moves.extend(self._get_piece_capture_moves(tiger))
+
+            if len(moves) == 0:
+                locked_tigers += 1
+
+        return locked_tigers
+
+    def __str__(self):
+        board = ""
+
+        for lin in self.board:
+            for col in lin:
+                board += str(col)
+
+        return board
 
     def print_board(self):
         board_str = (
@@ -149,7 +202,9 @@ class Board:
         intersect_count = 0
         for i, char in enumerate(board_str):
             if char == "P":
-                piece = self.board[intersect_count // BOARD_LINES, intersect_count % BOARD_COLS]
+                piece = self.board[
+                    intersect_count // BOARD_LINES, intersect_count % BOARD_COLS
+                ]
                 if piece == GOAT_PLAYER:
                     piece_str = "G"
                 elif piece == TIGER_PLAYER:

@@ -1,5 +1,12 @@
-from constants import TIGER_PLAYER
-from game.game import Game
+import time
+
+from numpy import argmax, argmin
+
+from minimax.heuristics import heuristic
+from minimax.minimax import alpha_beta_search
+from minimax.search_tree import SearchTree
+from src.constants import GOAT_PLAYER, TIGER_PLAYER
+from src.game.game import Game
 
 
 def main():
@@ -25,5 +32,45 @@ def main():
     print(f"Winner: {winner}")
 
 
+def play(h_1=None, cutoff_1=None, h_2=None, cutoff_2=None):
+    game = Game()
+    while not game.is_game_over():
+        print(
+            f"\nPlayer: {'Cabra' if game.game_state.player == GOAT_PLAYER else 'Tigre'}\n"
+        )
+        start = time.time()
+        if game.game_state.player == GOAT_PLAYER:
+            node: SearchTree = alpha_beta_search(
+                game=game,
+                cutoff=cutoff_1,
+                heuristic=h_1,
+            )
+            best_move = argmax([children.value for children in node.children])
+        else:
+            node: SearchTree = alpha_beta_search(
+                game=game,
+                cutoff=cutoff_2,
+                heuristic=h_2,
+            )
+            best_move = argmin([children.value for children in node.children])
+        move = node.children[best_move].move
+
+        game.ply(move)
+        end = time.time()
+        print(f"Time: {end - start:.5f}")
+        print(f"Selected move: {move}")
+        print("-" * 80)
+
+    print("*" * 80)
+    print(game.print_game_info())
+    result = game.get_winner()
+    if result == GOAT_PLAYER:
+        print("Deu cabra")
+    elif result == TIGER_PLAYER:
+        print("Deu tigre")
+    else:
+        print("Deu ruim")
+
+
 if __name__ == "__main__":
-    main()
+    play(cutoff_1=3, h_1=heuristic, cutoff_2=3, h_2=heuristic)

@@ -36,7 +36,9 @@ def alpha_beta_search(
             if curr_node.value is None:
                 curr_node.value = inf
 
-            n = alpha_beta_search(curr_node.game, curr_node.move, curr_node, cutoff, heuristic)
+            n = alpha_beta_search(
+                curr_node.game, curr_node.move, curr_node, cutoff, heuristic
+            )
 
             if n.value > node.value:
                 node.value = n.value
@@ -49,7 +51,9 @@ def alpha_beta_search(
             if curr_node.value is None:
                 curr_node.value = -inf
 
-            n = alpha_beta_search(curr_node.game, curr_node.move, curr_node, cutoff, heuristic)
+            n = alpha_beta_search(
+                curr_node.game, curr_node.move, curr_node, cutoff, heuristic
+            )
 
             if n.value < node.value:
                 node.value = n.value
