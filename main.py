@@ -127,6 +127,46 @@ def _select_move(game):
     return moves[int(selected_move)]
 
 
+def _select_cutoff():
+    selected_depth = input("The depth must be a positive integer: ")
+    while not selected_depth.isdigit() or int(selected_depth) < 1:
+        selected_depth = input("The depth must be a positive integer: ")
+
+    return int(selected_depth)
+
+
 if __name__ == "__main__":
-    # play_alg_vs_alg(cutoff_1=5, h_1=heuristic, cutoff_2=5, h_2=heuristic)
-    play_human_vs_alg(GOAT_PLAYER, heuristic, 4)
+    print("1: Computer x Computer\n" "2: Player x Computer\n")
+    selected_mode = input("Choose a mode: ")
+    while (
+        not selected_mode.isdigit()
+        or int(selected_mode) > 2
+        or int(selected_mode) < 0
+    ):
+        selected_mode = input("Choose a mode: ")
+
+    if int(selected_mode) == 1:
+        print("Select search depth for the first player")
+        cutoff_1 = _select_cutoff()
+        print("Select search depth for the second player")
+        cutoff_2 = _select_cutoff()
+        play_alg_vs_alg(
+            cutoff_1=cutoff_1, h_1=heuristic, cutoff_2=cutoff_2, h_2=heuristic
+        )
+    else:
+        print("Select search depth for the computer player")
+        cutoff = _select_cutoff()
+
+        print("1: Play as GOAT\n" "2: Play as TIGER\n")
+        selected_mode = input("Choose your pieces: ")
+        while (
+            not selected_mode.isdigit()
+            or int(selected_mode) > 2
+            or int(selected_mode) < 0
+        ):
+            selected_mode = input("Choose your pieces: ")
+
+        if int(selected_mode) == 1:
+            play_human_vs_alg(GOAT_PLAYER, heuristic, cutoff)
+        else:
+            play_human_vs_alg(TIGER_PLAYER, heuristic, cutoff)
