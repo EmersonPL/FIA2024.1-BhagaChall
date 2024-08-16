@@ -32,7 +32,7 @@ def main():
     print(f"Winner: {winner}")
 
 
-def play(h_1=None, cutoff_1=None, h_2=None, cutoff_2=None):
+def play_alg_vs_alg(h_1=None, cutoff_1=None, h_2=None, cutoff_2=None):
     game = Game()
     while not game.is_game_over():
         print(
@@ -65,12 +65,48 @@ def play(h_1=None, cutoff_1=None, h_2=None, cutoff_2=None):
     print(game.print_game_info())
     result = game.get_winner()
     if result == GOAT_PLAYER:
-        print("Deu cabra")
-    elif result == TIGER_PLAYER:
-        print("Deu tigre")
+        print("Cabra venceu")
     else:
-        print("Deu ruim")
+        print("Tigre venceu")
+
+
+def play_human_vs_alg(
+    human_player: int = GOAT_PLAYER, heuristic=None, cutoff=None
+):
+    game = Game()
+    while not game.is_game_over():
+        print(
+            f"\nPlayer: {'Cabra' if game.game_state.player == GOAT_PLAYER else 'Tigre'}\n"
+        )
+        if human_player == game.game_state.player:
+            selected_move = _select_move(game)
+            game.ply(selected_move)
+        else:
+            start = time.time()
+            node: SearchTree = alpha_beta_search(
+                game=game,
+                cutoff=cutoff,
+                heuristic=heuristic,
+            )
+            best_move = argmax([children.value for children in node.children])
+
+            move = node.children[best_move].move
+
+            game.ply(move)
+            end = time.time()
+            print(f"Time: {end - start:.5f}")
+
+            print(f"Selected move: {move}")
+            print("-" * 80)
+
+        print("*" * 80)
+        print(game.print_game_info())
+        result = game.get_winner()
+        if result == GOAT_PLAYER:
+            print("Cabra venceu")
+        else:
+            print("Tigre venceu")
 
 
 if __name__ == "__main__":
-    play(cutoff_1=3, h_1=heuristic, cutoff_2=3, h_2=heuristic)
+    play_alg_vs_alg(cutoff_1=6, h_1=heuristic, cutoff_2=6, h_2=heuristic)

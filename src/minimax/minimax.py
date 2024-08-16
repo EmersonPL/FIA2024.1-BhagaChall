@@ -72,7 +72,6 @@ def minimax(game: Game = None, move: Tuple[int, int] | None = None, **kwargs):
     node = SearchTree(game, move)
 
     frontier = deque([node])
-    # TODO: limit search on already visited states
 
     while frontier:
         curr_node = frontier.pop()
