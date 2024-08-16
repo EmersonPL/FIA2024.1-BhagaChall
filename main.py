@@ -117,7 +117,11 @@ def _select_move(game):
 
     print()
     selected_move = input("Choose a move: ")
-    while int(selected_move) >= len(moves) or int(selected_move) < 0:
+    while (
+        not selected_move.isdigit()
+        or int(selected_move) >= len(moves)
+        or int(selected_move) < 0
+    ):
         selected_move = input("Choose a move: ")
 
     return moves[int(selected_move)]
@@ -125,4 +129,4 @@ def _select_move(game):
 
 if __name__ == "__main__":
     # play_alg_vs_alg(cutoff_1=5, h_1=heuristic, cutoff_2=5, h_2=heuristic)
-    play_human_vs_alg(TIGER_PLAYER, heuristic, 4)
+    play_human_vs_alg(GOAT_PLAYER, heuristic, 4)
