@@ -99,14 +99,30 @@ def play_human_vs_alg(
             print(f"Selected move: {move}")
             print("-" * 80)
 
-        print("*" * 80)
-        print(game.print_game_info())
-        result = game.get_winner()
-        if result == GOAT_PLAYER:
-            print("Cabra venceu")
-        else:
-            print("Tigre venceu")
+    print("*" * 80)
+    print(game.print_game_info())
+    result = game.get_winner()
+    if result == GOAT_PLAYER:
+        print("Cabra venceu")
+    else:
+        print("Tigre venceu")
+
+
+def _select_move(game):
+    moves = game.available_moves()
+    print(game.print_game_info())
+    print(f"Allowed moves:")
+    for i, move in enumerate(moves):
+        print(f"{i}: {move}")
+
+    print()
+    selected_move = input("Choose a move: ")
+    while int(selected_move) >= len(moves) or int(selected_move) < 0:
+        selected_move = input("Choose a move: ")
+
+    return moves[int(selected_move)]
 
 
 if __name__ == "__main__":
-    play_alg_vs_alg(cutoff_1=6, h_1=heuristic, cutoff_2=6, h_2=heuristic)
+    # play_alg_vs_alg(cutoff_1=5, h_1=heuristic, cutoff_2=5, h_2=heuristic)
+    play_human_vs_alg(TIGER_PLAYER, heuristic, 4)

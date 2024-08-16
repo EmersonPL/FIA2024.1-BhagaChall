@@ -15,7 +15,7 @@ def dummy_heuristic_tiger(game: Game) -> int | float:
 
 def heuristic(game: Game) -> int | float:
     num_goat = game.game_state.positioned_goats - game.game_state.captured_goats
-    locked_tigers = game.count_number_of_locked_tigers() * 50
+    locked_tigers = game.count_number_of_locked_tigers() * 2
 
     value_captured_goat = 10 * game.game_state.captured_goats
     tiger_moves = _calculate_tiger_moves_score(game)
